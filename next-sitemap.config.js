@@ -1,18 +1,22 @@
 /** @type {import('next-sitemap').IConfig} */
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('yourdomain.com')
+  ? process.env.NEXT_PUBLIC_APP_URL
+  : 'https://example.com';
+
 module.exports = {
-  siteUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://yourdomain.com',
+  siteUrl,
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   exclude: ['/api/*', '/sign-in*', '/sign-up*'],
   alternateRefs: [
-    { href: 'https://yourdomain.com/en', hreflang: 'en' },
-    { href: 'https://yourdomain.com/zh', hreflang: 'zh' },
+    { href: `${siteUrl}/en`, hreflang: 'en' },
+    { href: `${siteUrl}/zh`, hreflang: 'zh' },
   ],
   robotsTxtOptions: {
     policies: [
       { userAgent: '*', allow: '/' },
       { userAgent: '*', disallow: ['/api/', '/sign-in', '/sign-up'] },
     ],
-    additionalSitemaps: [],
+    additionalSitemaps: [`${siteUrl}/sitemap.xml`],
   },
 };

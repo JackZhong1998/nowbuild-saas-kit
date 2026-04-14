@@ -4,4 +4,4 @@ Disallow: /api/
 Disallow: /sign-in
 Disallow: /sign-up
 
-Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: /sitemap.xml

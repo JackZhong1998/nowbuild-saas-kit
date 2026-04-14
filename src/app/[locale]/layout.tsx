@@ -6,6 +6,8 @@ import { notFound } from 'next/navigation';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google';
 import { routing } from '@/i18n/routing';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
+import { getBaseUrl, getSiteName } from '@/lib/seo';
 import '@/app/globals.css';
 
 const isClerkConfigured =
@@ -31,11 +33,25 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  robots: { index: true, follow: true },
+  metadataBase: new URL(getBaseUrl()),
+  title: {
+    default: `${getSiteName()} | SaaS Framework`,
+    template: `%s | ${getSiteName()}`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
+    },
+  },
   openGraph: {
     type: 'website',
-    siteName: 'NowBuild',
+    siteName: getSiteName(),
     locale: 'en_US',
   },
   twitter: {
@@ -71,6 +87,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         <meta name="theme-color" content="#4f46e5" />
       </head>
       <body className="min-h-screen bg-white antialiased">
+        <GoogleAnalytics />
         {isClerkConfigured ? (
           <ClerkProvider>
             <NextIntlClientProvider messages={messages}>

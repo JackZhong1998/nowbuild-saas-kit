@@ -1,10 +1,10 @@
 <p align="center">
   <strong>NowBuild SaaS Kit</strong><br/>
-  Production-ready SaaS framework · Auth · Payments · Database · SEO · i18n
+  Production-ready SaaS framework · Auth · Payments · Database · Analytics · SEO · i18n
 </p>
 
 <p align="center">
-  English | <a href="./README.md">中文</a>
+  <a href="https://NowBuild.ai">🌐 NowBuild.ai</a> · English | <a href="./README.md">中文</a>
 </p>
 
 ---
@@ -19,12 +19,13 @@ If you need a website with user authentication, subscription payments, a landing
 |--------------|-------------|-----------|
 | User login / signup | Clerk | Built-in, 0 hours |
 | Online payments (subscriptions) | Stripe | Built-in, 0 hours |
+| Analytics | Google Analytics | Built-in, 0 hours |
 | Database | Supabase | Built-in, 0 hours |
 | Multi-language (EN / ZH) | next-intl | Built-in, 0 hours |
 | SEO optimization | Structured data + meta tags | Built-in, 0 hours |
 | Deploy to production | Vercel one-click deploy | 5 minutes |
 
-> Building all this from scratch typically takes 2–4 weeks. With NowBuild, you can ship in days.
+> Building all this from scratch typically takes 2–4 weeks. With NowBuild, you can ship in one day.
 
 ---
 
@@ -39,6 +40,7 @@ If you need a website with user authentication, subscription payments, a landing
 | Payments | Stripe | Global payment platform |
 | Database | Supabase | PostgreSQL cloud database |
 | i18n | next-intl | Internationalization framework |
+| Analytics | Google Analytics | User behavior tracking & traffic stats |
 | Deploy | Vercel | Officially recommended for Next.js |
 
 ---
@@ -90,6 +92,23 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
+## 🤖 AI Agent Onboarding (Cursor / Claude Code / Codex)
+
+If you want AI to handle onboarding and troubleshooting quickly, use the built-in skill files:
+
+- Chinese skill: `skills/nowbuild-onboarding/SKILL.md`
+- English skill: `skills/nowbuild-onboarding/SKILL.en.md`
+
+Suggested trigger prompts:
+
+- "Help me run this SaaS framework in Cursor."
+- "Set up this project in Claude Code and configure env."
+- "What is the fastest way to boot this framework in Codex?"
+
+This skill guides users through the shortest path: install dependencies, copy and fill `.env.local`, start the dev server, verify key routes (`/`, `/sign-in`, `/pricing`), and troubleshoot common startup/integration errors.
+
+---
+
 ## 🔑 Environment Variable Setup Guide (Start Here)
 
 > This is the most important section of this document. Follow each step carefully.
@@ -101,6 +120,7 @@ You need accounts on 3 platforms:
 | Clerk | User authentication | https://clerk.com |
 | Stripe | Online payments | https://stripe.com |
 | Supabase | Database storage | https://supabase.com |
+| Google Analytics | User behavior analytics | https://analytics.google.com |
 
 ---
 
@@ -255,7 +275,33 @@ The CLI will output a temporary webhook secret — copy it to `STRIPE_WEBHOOK_SE
 
 ---
 
-### 📌 Step 4: App Configuration
+### 📌 Step 4: Set Up Google Analytics
+
+> Google Analytics (GA) is a free tool from Google that lets you understand how users interact with your website — page views, traffic sources, session duration, and more. You need **1 value**.
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | GA4 Measurement ID (format: `G-XXXXXXXXXX`) |
+
+**How to get it:**
+
+1. Go to https://analytics.google.com and sign in with your Google account
+2. Click **"Start measuring"** (if first time) or **"Admin"** (gear icon, bottom-left)
+3. Create an account → enter account name (e.g., `NowBuild`) → click **"Next"**
+4. Create a property → enter name (e.g., `NowBuild Website`) → set timezone and currency → click **"Next"**
+5. Fill in business info → click **"Create"**
+6. Choose platform: click **"Web"**
+7. Enter your website URL (e.g., `nowbuild.ai`) and stream name → click **"Create stream"**
+8. On the stream detail page, copy the **Measurement ID** (looks like `G-A1B2C3D4E5`)
+9. Paste it into `NEXT_PUBLIC_GA_MEASUREMENT_ID` in your `.env.local`
+
+> 💡 **Can't find the ID?** Go to **Admin** (gear icon) → **Data Streams** → click your stream → the Measurement ID is at the top.
+
+> 💡 **Don't want analytics?** Totally fine — skip this step. If `NEXT_PUBLIC_GA_MEASUREMENT_ID` stays as the default `G-XXXXXXXXXX`, the GA script won't load. No impact on your site.
+
+---
+
+### 📌 Step 5: App Configuration
 
 | Variable | Description | Example |
 |----------|-------------|---------|
@@ -359,6 +405,12 @@ A: Yes. The payment layer is modular. Replace the Stripe SDK in `src/lib/stripe.
 A: Yes. This is a standard Next.js app. It works on AWS, Netlify, Docker, or any Node.js-compatible platform.
 
 ---
+
+---
+
+<p align="center">
+  Built by <a href="https://NowBuild.ai"><strong>NowBuild.ai</strong></a> · Ship your SaaS faster
+</p>
 
 ## License
 

@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/landing/Footer';
 import { Link } from '@/i18n/navigation';
+import { buildAbsoluteUrl } from '@/lib/seo';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -39,8 +40,8 @@ export default async function BlogPage({ params }: Props) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: process.env.NEXT_PUBLIC_APP_URL },
-      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/blog` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: buildAbsoluteUrl(`/${locale}`) },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: buildAbsoluteUrl(`/${locale}/blog`) },
     ],
   };
 

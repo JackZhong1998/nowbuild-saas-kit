@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/landing/Footer';
 import { Link } from '@/i18n/navigation';
+import { buildAbsoluteUrl, getSiteName } from '@/lib/seo';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -53,6 +54,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'article',
       publishedTime: post.date,
       authors: [post.author],
+      url: `/${locale}/blog/${slug}`,
+    },
+    twitter: {
+      title: post.title,
+      description: post.excerpt,
+      card: 'summary_large_image',
     },
   };
 }
@@ -78,16 +85,17 @@ export default async function BlogPostPage({ params }: Props) {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'NowBuild',
+      name: getSiteName(),
     },
+    mainEntityOfPage: buildAbsoluteUrl(`/${locale}/blog/${slug}`),
   };
 
   const breadcrumbData = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: process.env.NEXT_PUBLIC_APP_URL },
-      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/blog` },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: buildAbsoluteUrl(`/${locale}`) },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: buildAbsoluteUrl(`/${locale}/blog`) },
       { '@type': 'ListItem', position: 3, name: post.title },
     ],
   };

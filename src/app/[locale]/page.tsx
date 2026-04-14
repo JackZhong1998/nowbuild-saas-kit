@@ -6,6 +6,7 @@ import FeatureComparison from '@/components/landing/FeatureComparison';
 import FeatureHighlights from '@/components/landing/FeatureHighlights';
 import FAQ from '@/components/landing/FAQ';
 import Footer from '@/components/landing/Footer';
+import { buildAbsoluteUrl, getBaseUrl, getSiteName } from '@/lib/seo';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -50,20 +51,20 @@ export default async function HomePage({ params }: Props) {
   const orgStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'NowBuild',
-    url: process.env.NEXT_PUBLIC_APP_URL,
-    logo: `${process.env.NEXT_PUBLIC_APP_URL}/logo.png`,
+    name: getSiteName(),
+    url: getBaseUrl(),
+    logo: buildAbsoluteUrl('/logo.png'),
     sameAs: [],
   };
 
   const websiteStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'NowBuild',
-    url: process.env.NEXT_PUBLIC_APP_URL,
+    name: getSiteName(),
+    url: getBaseUrl(),
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${process.env.NEXT_PUBLIC_APP_URL}/blog?q={search_term_string}`,
+      target: buildAbsoluteUrl(`/${locale}/blog?q={search_term_string}`),
       'query-input': 'required name=search_term_string',
     },
   };

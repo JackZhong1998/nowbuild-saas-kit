@@ -98,10 +98,18 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 border-t border-gray-100 pt-8">
+        <div className="mt-12 border-t border-gray-100 pt-8 flex flex-col items-center gap-2">
           <p className="text-center text-sm text-gray-400">
             {t('copyright', { year: String(year) })}
           </p>
+          <a
+            href="https://NowBuild.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-gray-400 transition-colors hover:text-primary-600"
+          >
+            Powered by NowBuild.ai
+          </a>
         </div>
       </div>
     </footer>
