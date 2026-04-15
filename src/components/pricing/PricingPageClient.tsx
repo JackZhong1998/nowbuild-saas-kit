@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/landing/Footer';
 import PricingModal from '@/components/PricingModal';
 
 export default function PricingPageClient() {
   const t = useTranslations('Pricing');
+  const locale = useLocale();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -23,10 +24,26 @@ export default function PricingPageClient() {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan, billingCycle }),
+        body: JSON.stringify({ plan, billingCycle, locale }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Checkout request failed:', response.status, errorText);
+        return;
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const errorText = await response.text();
+        console.error('Checkout response is not JSON:', errorText);
+        return;
+      }
+
       const { url } = await response.json();
-      if (url) window.location.href = url;
+      if (url) {
+        window.location.href = url;
+      }
     } catch (error) {
       console.error('Failed to create checkout session:', error);
     }
@@ -79,18 +96,10 @@ export default function PricingPageClient() {
                   : t(`plans.${planKey}.priceYearly`);
                 const period = billingCycle === 'monthly' ? t('perMonth') : t('perYear');
 
-                const features: string[] = [];
-                let i = 0;
-                while (true) {
-                  try {
-                    const f = t(`plans.${planKey}.features.${i}`);
-                    if (!f) break;
-                    features.push(f);
-                    i++;
-                  } catch {
-                    break;
-                  }
-                }
+                const rawFeatures = t.raw(`plans.${planKey}.features`);
+                const features = Array.isArray(rawFeatures)
+                  ? rawFeatures.filter((item): item is string => typeof item === 'string')
+                  : [];
 
                 return (
                   <div

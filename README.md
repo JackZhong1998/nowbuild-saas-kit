@@ -384,6 +384,26 @@ stripe listen --forward-to localhost:3000/api/webhooks/stripe
 
 > 🎉 恭喜！Stripe 是最复杂的部分，完成这里后面就简单了。
 
+#### 2.6 Stripe 测试方法（含测试账号）
+
+完整测试文档见：`STRIPE_TESTING.md`
+
+**常用测试账号（Stripe 测试卡）：**
+
+| 场景 | 测试账号（卡号） | 其他信息 |
+|------|------------------|----------|
+| 支付成功 | `4242 4242 4242 4242` | 到期日填未来时间、CVC 任意 3 位、邮编任意 |
+| 3D Secure 验证 | `4000 0025 0000 3155` | 用于测试需身份验证的支付流程 |
+| 支付失败（余额不足） | `4000 0000 0000 9995` | 用于验证失败提示和异常分支 |
+
+**最短测试步骤：**
+
+1. 运行 `npm run dev`
+2. 新开终端运行 `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+3. 将 CLI 输出的 `whsec_xxx` 写入 `.env.local` 的 `STRIPE_WEBHOOK_SECRET`，并重启服务
+4. 登录站点后在定价页发起支付，分别用上面 3 张测试卡验证成功/3DS/失败路径
+5. 检查 Supabase `subscriptions` 表状态是否与预期一致
+
 ---
 
 ### 📌 第三步：配置 Supabase（数据库）

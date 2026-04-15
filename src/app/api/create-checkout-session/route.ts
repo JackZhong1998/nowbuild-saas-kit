@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { plan, billingCycle } = await request.json();
+    const { plan, billingCycle, locale } = await request.json();
 
     if (plan !== 'pro') {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
@@ -23,12 +23,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Price not configured' }, { status: 500 });
     }
 
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const safeLocale = locale === 'zh' ? 'zh' : 'en';
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
+      success_url: `${appUrl}/${safeLocale}/dashboard?payment=success`,
+      cancel_url: `${appUrl}/${safeLocale}/pricing?canceled=true`,
       metadata: { userId, plan, billingCycle },
       client_reference_id: userId,
     });

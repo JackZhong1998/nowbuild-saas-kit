@@ -8,7 +8,6 @@ import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google';
 import { routing } from '@/i18n/routing';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import { getBaseUrl, getSiteName } from '@/lib/seo';
-import '@/app/globals.css';
 
 const isClerkConfigured =
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
@@ -80,26 +79,15 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${jakarta.variable} ${dmSans.variable}`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <meta name="theme-color" content="#4f46e5" />
-      </head>
-      <body className="min-h-screen bg-white antialiased">
-        <GoogleAnalytics />
-        {isClerkConfigured ? (
-          <ClerkProvider>
-            <NextIntlClientProvider messages={messages}>
-              {children}
-            </NextIntlClientProvider>
-          </ClerkProvider>
-        ) : (
-          <NextIntlClientProvider messages={messages}>
-            {children}
-          </NextIntlClientProvider>
-        )}
-      </body>
-    </html>
+    <div className={`${jakarta.variable} ${dmSans.variable} min-h-screen bg-white antialiased`}>
+      <GoogleAnalytics />
+      {isClerkConfigured ? (
+        <ClerkProvider>
+          <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        </ClerkProvider>
+      ) : (
+        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+      )}
+    </div>
   );
 }

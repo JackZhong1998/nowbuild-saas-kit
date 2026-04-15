@@ -30,38 +30,65 @@ export async function POST(request: Request) {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.userId;
         const plan = session.metadata?.plan;
+        const subscriptionId =
+          typeof session.subscription === 'string'
+            ? session.subscription
+            : session.subscription?.id;
+        const customerId =
+          typeof session.customer === 'string' ? session.customer : session.customer?.id;
+        let currentPeriodEnd: string | null = null;
+
+        if (subscriptionId) {
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+          currentPeriodEnd = new Date(subscription.current_period_end * 1000).toISOString();
+        }
 
         if (userId && plan) {
-          await supabase.from('subscriptions').upsert({
-            user_id: userId,
-            stripe_customer_id: session.customer as string,
-            stripe_subscription_id: session.subscription as string,
-            plan,
-            status: 'active',
-            current_period_end: new Date().toISOString(),
-          });
+          const { error } = await supabase.from('subscriptions').upsert(
+            {
+              user_id: userId,
+              stripe_customer_id: customerId ?? null,
+              stripe_subscription_id: subscriptionId ?? null,
+              plan,
+              status: 'active',
+              current_period_end: currentPeriodEnd,
+            },
+            { onConflict: 'user_id' }
+          );
+
+          if (error) {
+            throw new Error(`Failed to upsert subscription: ${error.message}`);
+          }
         }
         break;
       }
 
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
-        await supabase
+        const { error } = await supabase
           .from('subscriptions')
           .update({
             status: subscription.status,
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
           })
           .eq('stripe_subscription_id', subscription.id);
+
+        if (error) {
+          throw new Error(`Failed to update subscription: ${error.message}`);
+        }
         break;
       }
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
-        await supabase
+        const { error } = await supabase
           .from('subscriptions')
           .update({ status: 'canceled' })
           .eq('stripe_subscription_id', subscription.id);
+
+        if (error) {
+          throw new Error(`Failed to cancel subscription: ${error.message}`);
+        }
         break;
       }
     }
